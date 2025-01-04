@@ -1,0 +1,72 @@
+en 
+
+config t 
+
+hostname Plunging.peaks.EDGE-ROUTER 
+
+banner motd #Unathorized access is prohibited# 
+
+username admin password Pa$$w0rd 
+
+ip domain-name plunging.peaks
+crypto key generate rsa general-keys modulus 1024	 
+
+line vty 0 4 
+
+transport input ssh telnet 
+
+login local 
+
+enable secret Pa$$w0rd 
+
+line console 0  
+
+password Pa$$w0rd 
+
+login 
+
+exit 
+
+enable secret Pa$$w0rd 
+
+service password-encryption 
+
+access-list 1 permit 128.26.0.0 0.0.255.255 
+
+Int fa0/0 
+
+ip add dhcp 
+
+no shut 
+
+ip nat outside 
+
+int fa0/1  
+
+ip add 128.26.6.1 255.255.255.0 
+
+no shut 
+
+ip nat inside 
+
+exit 
+
+ip nat inside source list 1 interface fa0/0 overload 
+
+ip route 0.0.0.0 0.0.0.0 10.152.68.1 
+
+ip route 128.26.1.0 255.255.255.0 128.26.6.2 
+
+ip route 128.26.2.0 255.255.255.0 128.26.6.2 
+
+ip route 128.26.3.0 255.255.255.0 128.26.6.2 
+
+ip route 128.26.4.0 255.255.255.0 128.26.6.2 
+
+ip route 128.26.5.0 255.255.255.0 128.26.6.2 
+
+ip nat inside source static tcp 128.26.1.5 3389 10.152.68.53 3389 
+
+ip nat inside source static udp 128.26.1.5 3389 10.152.68.53 3389 
+
+do wr 

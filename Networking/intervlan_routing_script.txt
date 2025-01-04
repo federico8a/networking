@@ -1,0 +1,193 @@
+SCRIPT INTERVLAN ROUTING
+###########EDGE ROUTER DHCP##################
+en
+config t
+hostname CORPORATE-EDGE-ROUTER-GROUP1B
+banner motd #Unathorized access is prohibited#
+username admin secret group1
+ip domain-name group1.class
+crypto key generate rsa general-keys modulus 2048
+line vty 0 4
+transport input ssh
+login local
+enable secret group1
+line console 0 
+password group1
+login
+exit
+enable secret group1
+service password-encryption
+ip dhcp excluded-address 123.16.1.1 123.16.1.3
+ip dhcp pool vlan10
+network 123.16.1.0 255.255.255.0
+default-router 123.16.1.1
+dns-server 123.16.0.1
+exit
+ip dhcp excluded-address 123.16.2.1 123.16.2.3
+ip dhcp pool vlan20
+network 123.16.2.0 255.255.255.0
+default-router 123.16.2.1
+dns-server 123.16.2.1
+exit
+ip dhcp excluded-address 123.16.3.1 123.16.3.3
+ip dhcp pool vlan30
+network 123.16.3.0 255.255.255.0
+default-router 123.16.3.1
+dns-server 123.16.3.1
+exit
+int g0/0
+description POINT-TO-POINT-CORPORATE-L3-SWITCH
+no shut
+ip add 123.16.4.17 255.255.255.240
+exit
+ip route 0.0.0.0 0.0.0.0 123.16.4.18
+ip route 0.0.0.0 0.0.0.0 123.16.4.2
+int g0/1
+description POINT-TO-POINT-L3-DATA-CENTER
+no shut
+ip add 123.16.0.1 255.255.255.192
+do ping 123.16.0.2
+exit
+exit
+copy run start
+
+
+
+
+###########EDGE ROUTER DHCP##################
+EDGE DHCP ROUTER 123.16.4.17
+
+###########INTERNAL L3 SWITCH##################
+en
+config t
+hostname CORPORATE-LAYER3-SWITCH-GROUP1B
+banner motd #Unathorized access is prohibited#
+username admin secret group1
+ip domain-name group1.class
+crypto key generate rsa general-keys modulus 2048
+line vty 0 15
+transport input ssh
+login local
+enable secret group1
+line console 0 
+password group1
+login
+exit
+enable secret group1
+service password-encryption
+ip routing
+ip route 0.0.0.0 0.0.0.0 127.0.0.1
+vlan 10
+name Admin
+vlan 20
+name Tech
+vlan 30
+name WiFi
+vlan 66
+name Native
+int vlan 10
+description SVI-VLAN10
+ip add 123.16.1.1 255.255.255.0
+ip helper-address 123.16.4.17
+int vlan 20
+description SVI-VLAN20
+ip add 123.16.2.1 255.255.255.0
+ip helper-address 123.16.4.17
+int vlan 30 
+description SVI-VLAN30
+ip add 123.16.3.1 255.255.255.0
+int g1/0/1
+no shut
+no switchport
+description L3-LINK-TO-EDGE
+ip add 123.16.4.18 255.255.255.252
+ip helper-address 123.16.4.17
+int range g1/0/2-3
+channel-group 1 mode desirable
+int port-channel 1
+switchport mode trunk
+exit
+exit
+copy run start
+
+
+###########INTERNAL L3 SWITCH##################
+
+###########L2 SWITCH##################
+
+en
+config t
+hostname CORPORATE-LAYER2-SWITCH-GROUP1B
+banner motd #Unathorized access is prohibited#
+username admin secret group1
+ip domain-name group1.class
+crypto key generate rsa general-keys modulus 2048
+line vty 0 15
+transport input ssh
+login local
+enable secret group1
+line console 0 
+password group1
+login
+exit
+vlan 10
+name Admin
+vlan 20
+name Tech
+vlan 30
+name WiFi
+vlan 66
+name Native
+int vlan 10
+description ADMIN-VLAN-REMOTE-MANAGEMENT
+ip address 123.16.1.3 255.255.255.0
+exit
+ip default-gateway 123.16.4.18
+int fa0/1
+description HOSTS-VLAN-10
+switchport mode access
+switchport access vlan 10
+int fa0/2
+description HOSTS-VLAN-20
+switchport mode access
+switchport access vlan 20
+int range g0/1-2
+description ETHERCHANNEL-T
+channel-group 1 mode desirable
+int port-channel 1
+switchport mode trunk
+exit
+exit
+copy run start
+
+
+###########L2 SWITCH##################
+
+###########NBCC LAYER 3 SWITCH##################en
+en
+config t
+vlan 501
+name GROUP1-SRS-B
+exit
+int range g2/0/17-18	
+no shut			
+switchport mode access
+switchport access vlan 501
+int vlan 501
+description SVI-LINKG1
+ip add 123.16.0.2 255.255.255.192
+do ping 123.16.4.1
+
+
+###########NBCC LAYER 3 SWITCH################# g2/0/17-18
+
+###########SERVERS#################
+123.16.4.3 255.255.255.240
+123.16.4.4 255.255.255.240
+
+DATA STORE
+123.16.4.5 255.255.255.240
+
+
+
+###########SERVERS#################

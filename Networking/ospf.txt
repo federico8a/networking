@@ -1,0 +1,96 @@
+router ospf 10			<should be the same in all routers>
+router-id 1.1.1.1 		<increase for each router>
+network ospf 10
+network xxxxx wildcard subnet area 0
+
+en
+config t
+router ospf 10
+network 172.16.3.1 0.0.0.3 area 0
+
+int g0/0/0
+ip ospf 10 area 0
+
+
+
+configure loopback
+passive interfaces
+
+
+ip route 0.0.0.0 0.0.0.0 L3
+
+
+
+
+
+HSRP
+https://www.pearsonitcertification.com/articles/article.aspx?p=2141271
+
+
+hostname SW1
+!
+interface GigabitEthernet0/1
+ media-type rj45
+ negotiation auto
+!
+interface GigabitEthernet0/2
+ no switchport
+ ip address 192.168.13.1 255.255.255.0
+ negotiation auto
+!
+interface Vlan1
+ ip address 192.168.1.1 255.255.255.0
+ standby version 2
+ standby 1 ip 192.168.1.254
+ standby 1 timers msec 100 msec 300
+ standby 1 preempt delay minimum 60
+
+
+
+hsrp 2
+
+hostname SW2
+!
+track 1 ip sla 1
+!
+interface GigabitEthernet0/1
+ media-type rj45
+ negotiation auto
+!
+interface GigabitEthernet0/2
+ no switchport
+ ip address 192.168.23.2 255.255.255.0
+ negotiation auto
+!
+interface Vlan1
+ ip address 192.168.1.2 255.255.255.0
+ standby version 2
+ standby 1 ip 192.168.1.254
+ standby 1 timers msec 100 msec 300
+ standby 1 priority 150
+ standby 1 preempt delay minimum 60
+ standby 1 authentication md5 key-string MY_SECRET_KEY
+ standby 1 track 1 decrement 60
+!
+ip sla 1
+ icmp-echo 192.168.23.3
+ frequency 10
+ip sla schedule 1 life forever start-time now
+
+
+
+
+en
+config t
+int g0/0
+no shut
+int g0/1
+no shut
+
+int se0/3/0
+no shut
+int se0/3/1
+no shut
+
+april 25 3pm
+

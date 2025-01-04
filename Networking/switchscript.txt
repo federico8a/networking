@@ -1,0 +1,115 @@
+﻿####Switches####
+enable
+config t
+vlan 10
+name Admin
+exit
+vlan 20
+name Tech
+exit
+vlan 30
+name WiFi
+exit
+vlan 66
+name Native
+exit
+int fa0/47
+switchport mode access
+switchport access vlan 10
+exit
+int fa0/48
+switchport mode access
+switchport access vlan 20
+exit
+int range fa0/1-46
+switchport mode access 
+switchport access vlan 20
+int range g0/1-2
+switchport mode trunk
+switchport nonegotiate
+switchport trunk native vlan 66
+channel-group 1 mode active
+exit
+int port-channel 1
+switchport mode trunk
+switchport trunk native vlan 66
+
+
+####Router#####
+enable
+configure terminal
+
+interface GigabitEthernet0/0/0
+no shutdown
+
+interface GigabitEthernet0/0/0.10
+ encapsulation dot1Q 10
+ ip address 192.168.10.1 255.255.255.0
+ exit
+
+interface GigabitEthernet0/0/0.20
+ encapsulation dot1Q 20
+ ip address 192.168.20.1 255.255.255.0
+ exit
+
+interface GigabitEthernet0/0/0.30
+ encapsulation dot1Q 30
+ ip address 192.168.30.1 255.255.255.0
+ exit
+
+interface GigabitEthernet0/0/0.40
+ encapsulation dot1Q 40
+ ip address 192.168.40.1 255.255.255.0
+ exit
+
+interface GigabitEthernet0/0/0.50
+ encapsulation dot1Q 50
+ ip address 192.168.50.1 255.255.255.0
+ exit
+
+ip dhcp pool VLAN10
+ network 192.168.10.0 255.255.255.0
+ default-router 192.168.10.1
+ dns-server <DNS_Server_IP>
+
+ip dhcp pool VLAN20
+ network 192.168.20.0 255.255.255.0
+ default-router 192.168.20.1
+ dns-server <DNS_Server_IP>
+
+
+
+#first port vlan 30 g1/0/1
+#g1/0/2 vlan 10
+#g/0/3 vlan on Tanmay switch
+#Hostnames (business professional, intuitive naming)
+ SSH access
+ Security (passwords, banners, dhcp snooping)
+ Descriptions on key links
+ 1 or more additional configurations your team deem appropriate
+#
+#
+INTERNAL 
+
+DHCP ROUTER G0/0 TO INTERNAL NETWORK 123.16.1.17 255.255.255.252
+	G0/1 TO SERVER		123.16.1.1 2 255.255.255.240
+	
+LAYER 3 SWITCH G0/0/46 		123.16.1.18 255.255.255.252
+
+
+VLAN10 -	123.16.0 2-10
+VLAN20	-	123.16.0.11-99
+VLAN30	-	123.16.0.100-254
+VLAN 66 -	----
+VLAN ID: 501
+
+
+Anticipating the completion of my network administration diploma at New Brunswick Community College in May 2024, I am eager to bring my enhanced skills and knowledge to contribute to your team. In the attached document, I have outlined in detail the range of competencies I possess, including expertise in ITIL, Microsoft services, and more.
+
+
+I firmly believe that my skills and experiences align with the requirements of the Service Desk Analyst role. I am confident that I can make a valuable contribution to your organization.
+
+
+I would be greatly appreciative if we could arrange a meeting at your earliest convenience to discuss my qualifications in greater detail. During this interview, I look forward to expanding on how my personal values align with the ideals of your organization.
+
+Thank you for considering my application. I am enthusiastic about the possibility of contributing to your team and am eager to further discuss how my background and skills can benefit your organization.

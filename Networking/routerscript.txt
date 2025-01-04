@@ -1,0 +1,310 @@
+###DHCP ROUTER###
+en
+config t
+hostname DHCP-ROUTER-G1
+int g0/0
+no shut
+ip add 123.16.4.9 255.255.255.252
+no shut
+int g0/0.10
+encapsulation dot1Q 10
+ip add 123.16.1.1 255.255.255.0
+exit
+int g0/0.20
+encapsulation dot1Q 20
+ip add 123.16.2.1 255.255.255.0
+int g0/0.30
+encapsulation dot1Q 30
+ip add 123.16.3.1 255.255.255.0
+exit
+swi
+banner motd #Unathorized access is prohibited#
+username admin secret group1
+ip domain-name group1.class
+cyrpto key generate rsa modulus 2048
+line vty 0 4
+transport input ssh
+login local
+enable secret group1
+line console 0 
+password group1
+exit
+enable secret group1
+exit
+service password-encryption
+exit
+copy run start
+
+
+###DHCP ROUTER###
+
+###LAYER 3 SWITCH###
+en
+config t
+hostname LAYER3SWITCH-G1
+vlan 10
+name Admin
+exit
+vlan 20
+name Tech
+exit
+vlan 30
+name WiFi
+exit
+vlan 66
+name Native
+exit
+vlan 100
+name POINT-TO-POINT-INTERNAL-GROUP1
+ip routing
+int vlan 100
+ip address 123.16.4.10 255.255.255.252
+ip helper-address 123.16.4.9
+no shut
+int vlan 10
+ip add 123.16.1.2 255.255.255.0
+ip helper-address 123.16.1.1
+no shut
+int vlan 20
+ip add 123.16.2.2 255.255.255.0
+ip helper-address 123.16.2.1
+no shut
+int vlan 30
+ip add 123.16.3.2 255.255.255.0
+ip helper-address 123.16.3.1
+no shut
+int g1/0/1
+no shut
+description VLAN 100 TRUNK
+switchport mode trunk
+int g1/0/1-2
+description ETHERCHANNEL TRUNK LINK TO SWITCH2			
+switchport mode trunk					
+channel-group 1 mode desirable
+int port-channel 1
+switchport mode trunk
+int range g1/0/1-16
+description ACCESS LINK FOR VLAN 10 HOSTS
+switchport mode access
+switchport access vlan 10
+int range g1/0/17-33
+description ACCESS LINK FOR VLAN 20 HOSTS
+switchport mode access
+switchport access vlan 20
+int range g1/0/34-48
+description ACCESS LINK FOR VLAN 30 HOSTS
+switchport mode access
+switchport access vlan 30
+exit
+ip routing
+ip route 0.0.0.0 0.0.0.0 123.16.4.19
+router rip
+version 2
+network 123.16.1.0
+network 123.16.2.0
+network 123.16.3.0
+network 123.16.4.8
+exit
+banner motd #Unathorized access is prohibited#
+username admin secret group1
+ip domain-name group1.class
+cyrpto key generate rsa modulus 2048
+line vty 0 15
+transport input ssh
+login local
+exit
+enable secret group1
+line console 0 
+password group1
+login
+exit
+enable secret group1
+service password-encryption
+exit
+copy run start
+
+###LAYER 3 SWITCH###
+
+
+###LAYER 2 SWITCH###
+en
+config t
+hostname SWITCH-G1
+vlan 10
+name Admin
+exit
+vlan 20
+name Tech
+exit
+vlan 30
+name WiFi
+exit
+vlan 66
+name Native
+vlan 100
+name POINT-TO-POINT-INTERNAL-GROUP1
+int range fa0/1-16
+switchport mode access
+switchport access vlan 10
+int range fa0/17-20
+switchport mode access
+switchport access vlan 20
+int range fa0/21-22
+switchport mode access
+switchport access vlan 30
+int g1/0/47-48
+description ETHERCHANNEL TRUNK LINK TO S3 SWITCH
+channel-group 1 mode desirable
+int channel-group 1 
+switchport mode trunk
+exit
+banner motd #Unathorized access is prohibited#
+username admin secret group1
+ip domain-name group1.class
+cyrpto key generate rsa modulus 2048
+line vty 0 15
+transport input ssh
+login local
+exit
+enable secret group1
+line console 0 
+password group1
+login
+exit
+service password-encryption
+exit
+exit
+copy run start
+
+
+###LAYER 2 SWITCH###
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+en
+config t
+hostname LAYER3SWITCH-G1
+vlan 10
+name Admin
+exit
+vlan 20
+name Tech
+exit
+vlan 30
+name WiFi
+exit
+vlan 66
+name Native
+exit
+ip routing
+int vlan 100
+ip address 123.16.0.2 255.255.255.0
+ip helper-address 123.16.0.1
+no shut
+int vlan 10
+ip add 123.16.1.2 255.255.255.0
+ip helper-address 123.16.1.1
+no shut
+int vlan 20
+ip add 123.16.2.2 255.255.255.0
+ip helper-address 123.16.2.1
+no shut
+int vlan 30
+ip add 123.16.3.2 255.255.255.0
+ip helper-address 123.16.3.1
+no shut
+int range g1/0/1-2
+channel-group 1 mode desirable				
+exit
+int port-channel 1				                  
+switchport mode trunk
+switchport trunk native vlan 66
+no shut
+exit
+exit
+copy run start
+
+
+
+**********ROUTER ON STICK*****************
+en
+config t
+hostname Router-on-stick-example
+int g0/0
+ip add 10.10.0.1 255.255.255.0
+no shut
+int g0/0.10
+encapsulation dot1Q 10
+ip add 10.10.1.1 255.255.255.0
+ip helper-address xxxxx
+exit
+int g0/0.20
+encapsulation dot1Q 20
+ip add 10.10.2.1 255.255.255.0
+ip helper-address xxxxx
+int g0/0.30
+encapsulation dot1Q 30
+ip add 10.10.3.1 255.255.255.0
+ip helper-address xxxxx
+exit
+do wr <same as copy run start >
+*******************************************
+
+
+
+
+
+##MAKE LINKS SWITCHPORT
+
+
+
+
+LAYER 3 RACK
+
+en
+config t
+vlan 501
+name GROUP1-SENIORS B
+int g2/0/17
+description LINK-TO-ROUTER-GROUP1-SENIORS-B
+switchport mode access
+switchport access vlan 501
+int vlan 501 
+ip add 123.16.4.2 255.255.255.248
+no shut
+int g2/0/18
+switchport mode access
+switchport access vlan 501
+description LINK-TO-SERVER-GROUP1-SR-B
+
+
+
+The scalability and flexibility of Azure Virtual Machines (VMs) enable users to easily adjust computing resources based on demand and choose from a wide range of configurations to meet diverse workload requirements
+
+
+Azure Virtual Machines (VMs) offer global accessibility with high-quality performance, enabling users to deploy and access virtualized computing resources seamlessly across Microsoft's distributed and reliable cloud infrastructure.
+
+
+
+Enhanced security measures in Azure VMs involve robust features such as Azure Security Center, Network Security Groups, and encryption protocols to ensure a high-quality and comprehensive security posture for virtual machine environments
+
+redundancy for Virtual Machines (VMs) refers to the deployment of multiple instances across different physical hardware and geographical locations to ensure high availability and fault tolerance for applications and services
